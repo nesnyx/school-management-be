@@ -1,1 +1,7 @@
-export class CreatePresenceStudentDto {}
+import { IsNotEmpty, IsString } from "class-validator";
+
+export class CreatePresenceStudentDto {
+    @IsNotEmpty()
+    @IsString()
+    rfid: string;
+}

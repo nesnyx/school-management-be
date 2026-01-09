@@ -1,22 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { identity } from 'rxjs';
+import { UsersService } from 'src/modules/system-admin/users/users.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {
+  constructor(private jwtService: JwtService, private userService: UsersService) {
 
   }
-
-  findAll() {
-    return `This action returns all auth`;
+  async validateUser(identifier: string, password: string) {
+    const user = await this.userService.findByIdentifier(identifier);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    if (user.password !== password) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async login(identifier: string, password: string) {
+    const user = await this.validateUser(identifier, password)
+    const payload = {
+      userId: user.id,
+      identity: user.identifier,
+      role: user.role
+    }
+    const token = this.jwtService.sign(payload)
+    return { token };
   }
 }
