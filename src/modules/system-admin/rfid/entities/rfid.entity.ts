@@ -8,6 +8,7 @@ export class Rfid {
 
     @Column()
     rfid: string;
+
     @CreateDateColumn()
     createdAt: Date;
 

@@ -19,6 +19,7 @@ export class User {
     @Column({ unique: true })
     identifier: string;
 
+
     @Column()
     password: string;
 

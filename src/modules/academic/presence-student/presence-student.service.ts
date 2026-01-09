@@ -16,7 +16,6 @@ export class PresenceStudentService {
     private readonly presenceStudentRepository: Repository<PresenceStudent>,
     private readonly rfidService: RfidService,
     private readonly studentService: StudentsService) {
-
   }
 
   async recordPresence(createPresenceStudentDto: CreatePresenceStudentDto) {
@@ -30,7 +29,6 @@ export class PresenceStudentService {
     }
     const student = await this.studentService.findOne(user.id)
     if (!student) throw new NotFoundException('Data siswa tidak ditemukan');
-
     let presence = await this.presenceStudentRepository.findOne({ where: { studentId: student.id, date: today } })
     if (!presence) {
       if (currentHour > 11) {
@@ -55,6 +53,7 @@ export class PresenceStudentService {
         throw new BadRequestException('Terlalu cepat untuk absen pulang!');
       }
 
+      // 14:00
       if (currentHour < 14) {
         throw new BadRequestException('Belum jam pulang sekolah!');
       }

@@ -15,7 +15,6 @@ export class Student {
     @Column()
     userId: number;
 
-
     @CreateDateColumn()
     createdAt: Date;
 

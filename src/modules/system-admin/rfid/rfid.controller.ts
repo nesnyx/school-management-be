@@ -4,7 +4,7 @@ import { CreateRfidDto } from './dto/create-rfid.dto';
 import { AssignRfidDto } from './entities/assign-rfid.dto';
 
 
-@Controller('rfid')
+@Controller('rfids')
 export class RfidController {
   constructor(private readonly rfidService: RfidService) { }
 
