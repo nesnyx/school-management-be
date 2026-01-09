@@ -19,6 +19,7 @@ export class PresenceStudentService {
   }
 
   async recordPresence(createPresenceStudentDto: CreatePresenceStudentDto) {
+
     const today = new Date().toISOString().split('T')[0];
     const now = new Date();
     const currentHour = now.getHours();
