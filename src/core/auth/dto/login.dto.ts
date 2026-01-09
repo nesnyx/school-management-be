@@ -5,7 +5,7 @@ export class LoginDto {
     @IsString()
     @MinLength(3)
     @MaxLength(20)
-    username: string;
+    identifier: string;
 
     @IsString()
     @MinLength(8)

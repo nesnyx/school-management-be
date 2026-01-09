@@ -5,30 +5,30 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 
 @Controller('students')
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) {}
+  constructor(private readonly studentsService: StudentsService) { }
 
   @Post()
-  create(@Body() createStudentDto: CreateStudentDto) {
-    return this.studentsService.create(createStudentDto);
+  async create(@Body() createStudentDto: CreateStudentDto) {
+    return await this.studentsService.create(createStudentDto);
   }
 
   @Get()
-  findAll() {
-    return this.studentsService.findAll();
+  async findAll() {
+    return await this.studentsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.studentsService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    return await this.studentsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
-    return this.studentsService.update(+id, updateStudentDto);
+  async update(@Param('id') id: number, @Body() updateStudentDto: UpdateStudentDto) {
+    return await this.studentsService.update(id, updateStudentDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.studentsService.remove(+id);
+  async remove(@Param('id') id: number) {
+    return await this.studentsService.remove(id);
   }
 }
