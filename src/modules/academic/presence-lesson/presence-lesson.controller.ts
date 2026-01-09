@@ -5,7 +5,7 @@ import { UpdatePresenceLessonDto } from './dto/update-presence-lesson.dto';
 
 @Controller('presence-lesson')
 export class PresenceLessonController {
-  constructor(private readonly presenceLessonService: PresenceLessonService) {}
+  constructor(private readonly presenceLessonService: PresenceLessonService) { }
 
   @Post()
   create(@Body() createPresenceLessonDto: CreatePresenceLessonDto) {

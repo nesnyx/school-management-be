@@ -6,4 +6,4 @@ import { PresenceStudentController } from './presence-student.controller';
   controllers: [PresenceStudentController],
   providers: [PresenceStudentService],
 })
-export class PresenceStudentModule {}
+export class PresenceStudentModule { }
