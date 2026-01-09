@@ -19,28 +19,33 @@ export class RfidService {
 
   async assignCardToUser(assignRfidDto: AssignRfidDto) {
     const { rfid, userId } = assignRfidDto;
-    // 1. Cek apakah kartu sudah terdaftar di sistem
-    const existingCard = await this.rfidRepository.findOne({ where: { rfid } });
+    const existingRfid = await this.rfidRepository.findOne({ where: { rfid } });
+    if (!existingRfid) {
+      throw new NotFoundException('Kartu RFID tidak ditemukan');
+    }
+    const existingCard = await this.rfidCardRepository.findOne({ where: { rfidUuid: rfid } });
     if (existingCard) {
       throw new ConflictException('Kartu RFID ini sudah terdaftar');
     }
-
-    // 2. Cek apakah User-nya memang ada
     const user = await this.usersService.findOne(userId);
     if (!user) {
       throw new NotFoundException('User tidak ditemukan');
     }
 
-    // 3. Simpan relasi ke table rfid_cards
     const newCard = this.rfidCardRepository.create({
       rfidUuid: rfid,
-      userId,
+      userId: user.id,
       status: 'ACTIVE',
     });
 
     return await this.rfidCardRepository.save(newCard);
   }
+
   async create(createRfidDto: CreateRfidDto) {
+    const existingRfid = await this.rfidRepository.findOne({ where: { rfid: createRfidDto.rfid } });
+    if (existingRfid) {
+      throw new ConflictException('Kartu RFID ini sudah terdaftar');
+    }
     const rfid = this.rfidRepository.create(createRfidDto);
     return await this.rfidRepository.save(rfid);
   }

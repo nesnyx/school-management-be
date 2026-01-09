@@ -1,8 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 
-
-
 @Entity("presence_students")
 export class PresenceStudent {
     @PrimaryGeneratedColumn()

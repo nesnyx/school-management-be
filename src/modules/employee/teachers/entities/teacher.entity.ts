@@ -1,13 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { User } from '../../../system-admin/users/entities/user.entity';
+import { User } from "src/modules/system-admin/users/entities/user.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-@Entity('students')
-export class Student {
+@Entity("teachers")
+export class Teacher {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ unique: true })
-    nis: string;
+    @Column()
+    nip: string;
 
     @Column()
     fullName: string;
