@@ -1,6 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+// src/modules/system-admin/users/entities/user.entity.ts
 
-enum Role {
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn } from 'typeorm';
+import { RfidCard } from '../../rfid/entities/rfid-cards.entity'; // Sesuaikan path-nya
+
+export enum Role {
     ADMIN = 'ADMIN',
     EMPLOYEE = 'EMPLOYEE',
     GURU = 'GURU',
@@ -25,6 +28,13 @@ export class User {
     })
     role: Role;
 
+
+    @OneToMany(() => RfidCard, (rfidCard) => rfidCard.user)
+    rfidCards: RfidCard[];
+
     @CreateDateColumn()
     createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

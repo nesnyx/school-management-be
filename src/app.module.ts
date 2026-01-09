@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AcademicModule } from './modules/academic/academic.module';
 import { AuthModule } from './core/auth/auth.module';
+import { SystemAdminModule } from './modules/system-admin/system-admin.module';
 @Module({
   imports: [TypeOrmModule.forRoot({
     type: 'sqlite',
@@ -12,7 +13,7 @@ import { AuthModule } from './core/auth/auth.module';
   }), ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env',
-  }), AcademicModule, AuthModule],
+  }), AcademicModule, AuthModule, SystemAdminModule],
   controllers: [],
   providers: [],
 })
