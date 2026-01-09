@@ -27,7 +27,7 @@ export class PresenceStudentService {
     if (user.role !== Role.SISWA) {
       throw new BadRequestException('Kartu ini bukan milik siswa');
     }
-    const student = await this.studentService.findOne(user.id)
+    const student = await this.studentService.findOneByUserId(user.id)
     if (!student) throw new NotFoundException('Data siswa tidak ditemukan');
     let presence = await this.presenceStudentRepository.findOne({ where: { studentId: Number(student.id), date: today } })
     if (!presence) {

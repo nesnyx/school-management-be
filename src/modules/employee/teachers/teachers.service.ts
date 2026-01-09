@@ -40,6 +40,10 @@ export class TeachersService {
     return await this.teacherRepository.findOne({ where: { id } });
   }
 
+  async findOneByUserId(id: number) {
+    return await this.teacherRepository.findOne({ where: { userId: id } });
+  }
+
   async update(id: number, updateTeacherDto: UpdateTeacherDto) {
     const existingTeacher = await this.teacherRepository.findOne({ where: { id } });
     if (!existingTeacher) {

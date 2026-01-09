@@ -37,6 +37,10 @@ export class StudentsService {
     return await this.studentRepository.findOne({ where: { id } });
   }
 
+  async findOneByUserId(id: number) {
+    return await this.studentRepository.findOne({ where: { userId: id } });
+  }
+
   async update(id: number, updateStudentDto: UpdateStudentDto) {
     const existingStudent = await this.studentRepository.findOne({ where: { id } });
     if (!existingStudent) {
