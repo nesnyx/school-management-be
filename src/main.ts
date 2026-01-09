@@ -8,6 +8,6 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  await app.listen(process.env.PORT ?? 3002);
+  await app.listen(String(process.env.PORT));
 }
 bootstrap();

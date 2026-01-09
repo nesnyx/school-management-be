@@ -42,6 +42,10 @@ export class RfidService {
   }
 
   async create(createRfidDto: CreateRfidDto) {
+    const existingRfid = await this.rfidRepository.findOne({ where: { rfid: createRfidDto.rfid } });
+    if (existingRfid) {
+      throw new ConflictException('Kartu RFID ini sudah terdaftar');
+    }
     const rfid = this.rfidRepository.create(createRfidDto);
     return await this.rfidRepository.save(rfid);
   }

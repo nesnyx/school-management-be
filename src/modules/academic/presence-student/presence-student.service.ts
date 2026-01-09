@@ -19,7 +19,6 @@ export class PresenceStudentService {
   }
 
   async recordPresence(createPresenceStudentDto: CreatePresenceStudentDto) {
-
     const today = new Date().toISOString().split('T')[0];
     const now = new Date();
     const currentHour = now.getHours();
@@ -30,38 +29,35 @@ export class PresenceStudentService {
     }
     const student = await this.studentService.findOne(user.id)
     if (!student) throw new NotFoundException('Data siswa tidak ditemukan');
-    let presence = await this.presenceStudentRepository.findOne({ where: { studentId: student.id, date: today } })
+    let presence = await this.presenceStudentRepository.findOne({ where: { studentId: Number(student.id), date: today } })
     if (!presence) {
       if (currentHour > 11) {
         throw new BadRequestException('Sudah siang, tidak bisa absen masuk!');
       }
-      presence = this.presenceStudentRepository.create({
-        studentId: student.id,
+      const newPresence = this.presenceStudentRepository.create({
+        studentId: Number(student.id),
         date: today,
         timeIn: now,
         status: this.calculateStatus(now),
       });
+      return await this.presenceStudentRepository.save(newPresence);
     }
-    if (presence) {
-      if (presence.timeOut) {
-        throw new BadRequestException('Anda sudah absen pulang hari ini.');
-      }
-
-      const diffMs = now.getTime() - new Date(presence.timeIn).getTime();
-      const diffHours = diffMs / (1000 * 60 * 60);
-
-      if (diffHours < 4) {
-        throw new BadRequestException('Terlalu cepat untuk absen pulang!');
-      }
-
-      // 14:00
-      if (currentHour < 14) {
-        throw new BadRequestException('Belum jam pulang sekolah!');
-      }
-
-      presence.timeOut = now;
-      return await this.presenceStudentRepository.save(presence);
+    if (presence.timeOut) {
+      throw new BadRequestException('Anda sudah absen pulang hari ini.');
     }
+
+    const diffMs = now.getTime() - new Date(presence.timeIn).getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    if (diffHours < 4) {
+      throw new BadRequestException('Terlalu cepat untuk absen pulang!');
+    }
+
+    if (currentHour < 14) {
+      throw new BadRequestException('Belum jam pulang sekolah!');
+    }
+
+    presence.timeOut = now;
     return await this.presenceStudentRepository.save(presence);
   }
 
