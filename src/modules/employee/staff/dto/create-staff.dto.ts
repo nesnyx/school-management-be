@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class CreateParentDto {
-    @IsNotEmpty()
+export class CreateStaffDto {
     @IsString()
-    telp: string;
+    @IsNotEmpty()
+    username: string;
 
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     fullName: string;
 }

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Rfid } from './entities/rfid.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
-import { AssignRfidDto } from './entities/assign-rfid.dto';
+import { AssignRfidDto } from './dto/assign-rfid.dto';
 import { RfidCard } from './entities/rfid-cards.entity';
 
 @Injectable()

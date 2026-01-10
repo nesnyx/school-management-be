@@ -1,7 +1,7 @@
-// src/modules/system-admin/users/entities/user.entity.ts
+
 
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn } from 'typeorm';
-import { RfidCard } from '../../rfid/entities/rfid-cards.entity'; // Sesuaikan path-nya
+import { RfidCard } from '../../rfid/entities/rfid-cards.entity';
 
 export enum Role {
     ADMIN = 'ADMIN',
