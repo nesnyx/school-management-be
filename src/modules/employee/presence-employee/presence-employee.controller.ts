@@ -13,4 +13,9 @@ export class PresenceEmployeeController {
   }
 
 
+  @Get()
+  async findAll() {
+    return await this.presenceEmployeeService.findAll();
+  }
+
 }

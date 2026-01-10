@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RfidService } from './rfid.service';
 import { CreateRfidDto } from './dto/create-rfid.dto';
-import { AssignRfidDto } from './entities/assign-rfid.dto';
+import { AssignRfidDto } from './dto/assign-rfid.dto';
 
 
 @Controller('rfids')

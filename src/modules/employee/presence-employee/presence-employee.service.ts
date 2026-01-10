@@ -59,6 +59,11 @@ export class PresenceEmployeeService {
   }
 
 
+  async findAll() {
+    return await this.presenceEmployeeRepository.find();
+  }
+
+
   private calculateStatus(time: Date): string {
     const limit = new Date();
     limit.setHours(8, 0, 0);

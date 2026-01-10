@@ -1,34 +1,34 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AccessControlService } from './access-control.service';
-import { CreateAccessControlDto } from './dto/create-access-control.dto';
+import { CreateAccessControlDto, CreateRoleDto } from './dto/create-access-control.dto';
 import { UpdateAccessControlDto } from './dto/update-access-control.dto';
 
 @Controller('access-control')
 export class AccessControlController {
-  constructor(private readonly accessControlService: AccessControlService) {}
+  constructor(private readonly accessControlService: AccessControlService) { }
 
   @Post()
-  create(@Body() createAccessControlDto: CreateAccessControlDto) {
-    return this.accessControlService.create(createAccessControlDto);
+  async createRole(@Body() createRoleDto: CreateRoleDto) {
+    return await this.accessControlService.createRole(createRoleDto);
   }
 
   @Get()
-  findAll() {
-    return this.accessControlService.findAll();
+  async findAll() {
+    return await this.accessControlService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.accessControlService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    return await this.accessControlService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccessControlDto: UpdateAccessControlDto) {
-    return this.accessControlService.update(+id, updateAccessControlDto);
+  async update(@Param('id') id: number, @Body() updateAccessControlDto: UpdateAccessControlDto) {
+    return await this.accessControlService.update(id, updateAccessControlDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.accessControlService.remove(+id);
+  async remove(@Param('id') id: number) {
+    return await this.accessControlService.remove(id);
   }
 }
