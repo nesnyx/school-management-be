@@ -15,6 +15,7 @@ export class PresenceEmployeeService {
     private readonly rfidService: RfidService,
     private readonly staffService: StaffService
   ) { }
+
   async recordPresence(createPresenceEmployeeDto: CreatePresenceEmployeeDto) {
     const today = new Date().toISOString().split('T')[0];
     const now = new Date();

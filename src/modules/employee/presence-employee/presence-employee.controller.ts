@@ -12,7 +12,6 @@ export class PresenceEmployeeController {
     return await this.presenceEmployeeService.recordPresence(createPresenceEmployeeDto);
   }
 
-
   @Get()
   async findAll() {
     return await this.presenceEmployeeService.findAll();

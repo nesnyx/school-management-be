@@ -4,13 +4,16 @@ import { UpdateAccessControlDto } from './dto/update-access-control.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Roles } from './entities/roles.entity';
 import { Repository } from 'typeorm';
+import { UserRole } from './entities/user-role.entity';
 
 
 @Injectable()
 export class AccessControlService {
   constructor(
     @InjectRepository(Roles)
-    private rolesRepository: Repository<Roles>
+    private rolesRepository: Repository<Roles>,
+    @InjectRepository(UserRole)
+    private userRoleRepository: Repository<UserRole>,
   ) {
 
   }

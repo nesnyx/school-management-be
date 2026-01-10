@@ -1,1 +1,1 @@
-export class PaymentGateway {}
+export class PaymentGateway { }
