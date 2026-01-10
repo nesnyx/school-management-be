@@ -2,6 +2,7 @@
 
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn } from 'typeorm';
 import { RfidCard } from '../../rfid/entities/rfid-cards.entity';
+import { UserRole } from '../../access-control/entities/user-role.entity';
 
 export enum Role {
     ADMIN = 'ADMIN',
@@ -38,4 +39,7 @@ export class User {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => UserRole, (userRole) => userRole.user)
+    userRoles: UserRole[];
 }
