@@ -57,6 +57,13 @@ export class PresenceTeacherService {
     presence.timeOut = now;
     return await this.presenceTeacherRepository.save(presence);
   }
+
+
+  async findAll() {
+    return await this.presenceTeacherRepository.find();
+  }
+
+
   private calculateStatus(time: Date): string {
     const limit = new Date();
     limit.setHours(7, 0, 0);

@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAccessControlDto } from './dto/create-access-control.dto';
+import { CreateAccessControlDto, CreateRoleDto } from './dto/create-access-control.dto';
 import { UpdateAccessControlDto } from './dto/update-access-control.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Roles } from './entities/roles.entity';
+import { Repository } from 'typeorm';
+
 
 @Injectable()
 export class AccessControlService {
-  create(createAccessControlDto: CreateAccessControlDto) {
-    return 'This action adds a new accessControl';
+  constructor(
+    @InjectRepository(Roles)
+    private rolesRepository: Repository<Roles>
+  ) {
+
+  }
+  async createRole(createRoleDto: CreateRoleDto) {
+    const newRole = this.rolesRepository.create(createRoleDto);
+    return await this.rolesRepository.save(newRole);
   }
 
-  findAll() {
-    return `This action returns all accessControl`;
+  async findAll() {
+    return await this.rolesRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} accessControl`;
+  async findOne(id: number) {
+    return await this.rolesRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateAccessControlDto: UpdateAccessControlDto) {
-    return `This action updates a #${id} accessControl`;
+  async update(id: number, updateAccessControlDto: UpdateAccessControlDto) {
+    return await this.rolesRepository.update(id, updateAccessControlDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} accessControl`;
+  async remove(id: number) {
+    return await this.rolesRepository.delete(id);
   }
 }
