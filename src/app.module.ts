@@ -5,6 +5,7 @@ import { AcademicModule } from './modules/academic/academic.module';
 import { AuthModule } from './core/auth/auth.module';
 import { SystemAdminModule } from './modules/system-admin/system-admin.module';
 import { EmployeeModule } from './modules/employee/employee.module';
+import { FinanceModule } from './modules/finance/finance.module';
 @Module({
   imports: [TypeOrmModule.forRoot({
     type: 'sqlite',
@@ -14,7 +15,7 @@ import { EmployeeModule } from './modules/employee/employee.module';
   }), ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env',
-  }), AcademicModule, AuthModule, SystemAdminModule, EmployeeModule],
+  }), AcademicModule, AuthModule, SystemAdminModule, EmployeeModule, FinanceModule],
   controllers: [],
   providers: [],
 })
