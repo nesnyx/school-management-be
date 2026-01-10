@@ -9,5 +9,6 @@ import { UsersModule } from 'src/modules/system-admin/users/users.module';
   imports: [TypeOrmModule.forFeature([Staff]), UsersModule],
   controllers: [StaffController],
   providers: [StaffService],
+  exports: [StaffService]
 })
 export class StaffModule { }
