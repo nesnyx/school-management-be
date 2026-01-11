@@ -4,10 +4,13 @@ import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FeesTuition } from '../fees-tuition/entities/fees-tuition.entity';
+import { PaymentGateway, ReferenceType } from './entities/payment-gateway.entity';
 @Injectable()
 export class PaymentGatewayService {
   constructor(@InjectRepository(FeesTuition)
-  private feesTuitionRepository: Repository<FeesTuition>) { }
+  private feesTuitionRepository: Repository<FeesTuition>,
+    @InjectRepository(PaymentGateway)
+    private paymentGatewayRepository: Repository<PaymentGateway>) { }
   private snap = new midtransClient.Snap({
     isProduction: false,
     serverKey: String(process.env.MIDTRANS_SERVER_KEY),
@@ -26,26 +29,31 @@ export class PaymentGatewayService {
     return `INV-${datePart}-${randomPart}`;
   }
 
-  async createTransaction(tuitionId: number, amount: number) {
+
+  async cratePayment(amount: number, referenceType: ReferenceType, referenceId: number, status: string) {
+    const payment = this.paymentGatewayRepository.create({
+      amount,
+      referenceType,
+      referenceId,
+      status,
+    });
+    return await this.paymentGatewayRepository.save(payment);
+  }
+
+  async createTransaction(orderId: string, amount: number) {
     try {
       const parameters = {
         transaction_details: {
-          order_id: tuitionId.toString(),
+          order_id: orderId,
           gross_amount: amount,
         },
         item_details: [
           {
-            id: `FEES-${tuitionId}`,
+            id: orderId,
             price: amount,
-            quantity: 1,
-            name: `Pembayaran Uang Sekolah / SPP #${tuitionId}`,
+
           },
         ],
-        customer_details: {
-          first_name: "Customer",
-          email: "customer@example.com",
-        },
-        usage_limit: 1,
         enabled_payments: ['gopay', 'shopeepay', 'bank_transfer', 'cstore'],
       };
 
@@ -66,7 +74,7 @@ export class PaymentGatewayService {
     if (payload.signature_key !== hash) {
       throw new BadRequestException('Invalid Signature');
     }
-
+    console.log(payload);
     const status = payload.transaction_status;
     const fraud = payload.fraud_status;
     let newStatus = 'PENDING';

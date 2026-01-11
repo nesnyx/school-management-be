@@ -11,9 +11,7 @@ export class PaymentGatewayController {
   @HttpCode(HttpStatus.OK)
   async handleMidtransNotification(@Body() payload: any) {
     console.log('Incoming Webhook:', payload);
-
     await this.paymentGatewayService.handleWebhook(payload);
-
     return {
       status: 'success',
       message: 'Notification processed successfully',
