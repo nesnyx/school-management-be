@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFeesTuitionDto } from './dto/create-fees-tuition.dto';
-
 import { InjectRepository } from '@nestjs/typeorm';
 import { FeesTuition } from './entities/fees-tuition.entity';
 import { Repository } from 'typeorm';
 import { PaymentGatewayService } from '../payment-gateway/payment-gateway.service';
+import { generateOrderId } from 'src/common/helpers/order-id.helper';
+import { ReferenceType } from '../payment-gateway/entities/payment-gateway.entity';
+import { OnEvent } from '@nestjs/event-emitter';
 @Injectable()
 export class FeesTuitionService {
   constructor(
@@ -13,21 +15,44 @@ export class FeesTuitionService {
     private paymentGatewayService: PaymentGatewayService
 
   ) { }
+
+
+  @OnEvent('payment.updated')
+  async handlePaymentUpdated(payload: any) {
+    const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
+    if (referenceType == ReferenceType.FEES_TUITION) {
+      await this.feesTuitionRepository.update(referenceId, {
+        status: status,
+        midtransTransactionId: midtransTransactionId,
+        paymentType: paymentType,
+      });
+    }
+    console.log(`Fees Tuition ${referenceId} updated to ${status}`);
+  }
+
   async create(createFeesTuitionDto: CreateFeesTuitionDto) {
     const feesTuition = this.feesTuitionRepository.create({
       ...createFeesTuitionDto,
       invoiceId: this.paymentGatewayService.generateInvoiceNumber(),
       status: 'PENDING',
     });
-
+    const orderId = generateOrderId('FEES');
     const savedOrder = await this.feesTuitionRepository.save(feesTuition);
-    const midtransRes = await this.paymentGatewayService.createTransaction(
+    const payment = await this.paymentGatewayService.createPayment(
+      savedOrder.amount,
+      ReferenceType.FEES_TUITION,
       savedOrder.id,
-      savedOrder.amount
+      'PENDING'
+    );
+
+    const midtransRes = await this.paymentGatewayService.createTransaction(
+      orderId,
+      payment.amount
     );
     return {
       message: 'Checkout berhasil',
       data: savedOrder,
+      midtrans: midtransRes,
       midtrans_token: midtransRes.token,
       redirect_url: midtransRes.redirect_url
     };

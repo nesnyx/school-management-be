@@ -1,13 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as midtransClient from 'midtrans-client';
 import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FeesTuition } from '../fees-tuition/entities/fees-tuition.entity';
+import { PaymentGateway, ReferenceType } from './entities/payment-gateway.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 @Injectable()
 export class PaymentGatewayService {
   constructor(@InjectRepository(FeesTuition)
-  private feesTuitionRepository: Repository<FeesTuition>) { }
+  private feesTuitionRepository: Repository<FeesTuition>,
+    @InjectRepository(PaymentGateway)
+    private paymentGatewayRepository: Repository<PaymentGateway>,
+    private eventEmitter: EventEmitter2) { }
   private snap = new midtransClient.Snap({
     isProduction: false,
     serverKey: String(process.env.MIDTRANS_SERVER_KEY),
@@ -26,26 +31,31 @@ export class PaymentGatewayService {
     return `INV-${datePart}-${randomPart}`;
   }
 
-  async createTransaction(tuitionId: number, amount: number) {
+
+  async createPayment(amount: number, referenceType: ReferenceType, referenceId: number, status: string) {
+    const payment = this.paymentGatewayRepository.create({
+      amount,
+      referenceType,
+      referenceId,
+      status,
+    });
+    return await this.paymentGatewayRepository.save(payment);
+  }
+
+  async createTransaction(orderId: string, amount: number) {
     try {
       const parameters = {
         transaction_details: {
-          order_id: tuitionId.toString(),
+          order_id: orderId,
           gross_amount: amount,
         },
         item_details: [
           {
-            id: `FEES-${tuitionId}`,
+            id: orderId,
             price: amount,
-            quantity: 1,
-            name: `Pembayaran Uang Sekolah / SPP #${tuitionId}`,
+
           },
         ],
-        customer_details: {
-          first_name: "Customer",
-          email: "customer@example.com",
-        },
-        usage_limit: 1,
         enabled_payments: ['gopay', 'shopeepay', 'bank_transfer', 'cstore'],
       };
 
@@ -66,7 +76,11 @@ export class PaymentGatewayService {
     if (payload.signature_key !== hash) {
       throw new BadRequestException('Invalid Signature');
     }
-
+    const payment = await this.paymentGatewayRepository.findOne({
+      where: { id: payload.order_id }
+    });
+    if (!payment) throw new NotFoundException('Payment record not found');
+    console.log(payload);
     const status = payload.transaction_status;
     const fraud = payload.fraud_status;
     let newStatus = 'PENDING';
@@ -78,11 +92,21 @@ export class PaymentGatewayService {
       newStatus = 'FAILED';
     }
 
-    await this.feesTuitionRepository.update(payload.order_id, {
+    await this.paymentGatewayRepository.update(payment.id, {
+      status: newStatus,
+    });
+
+
+    this.eventEmitter.emit('payment.updated', {
+      referenceType: payment.referenceType,
+      referenceId: payment.referenceId,
       status: newStatus,
       midtransTransactionId: payload.transaction_id,
       paymentType: payload.payment_type,
     });
+
+
+
 
     return { status: 'OK' };
   }
