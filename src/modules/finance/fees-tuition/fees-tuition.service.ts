@@ -16,7 +16,6 @@ export class FeesTuitionService {
 
   ) { }
 
-
   @OnEvent('payment.updated')
   async handlePaymentUpdated(payload: any) {
     const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
