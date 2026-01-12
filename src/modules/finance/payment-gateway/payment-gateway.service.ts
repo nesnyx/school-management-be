@@ -10,8 +10,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 export class PaymentGatewayService {
   constructor(
     @InjectRepository(PaymentGateway)
-    private paymentGatewayRepository: Repository<PaymentGateway>,
-    private eventEmitter: EventEmitter2) { }
+    private readonly paymentGatewayRepository: Repository<PaymentGateway>,
+    private readonly eventEmitter: EventEmitter2) { }
   private snap = new midtransClient.Snap({
     isProduction: false,
     serverKey: String(process.env.MIDTRANS_SERVER_KEY),
@@ -31,7 +31,7 @@ export class PaymentGatewayService {
   }
 
 
-  async createPayment(amount: number, referenceType: ReferenceType, referenceId: number, status: string) {
+  async createPayment(amount: number, referenceType: ReferenceType, referenceId: string, status: string) {
     const payment = this.paymentGatewayRepository.create({
       amount,
       referenceType,
@@ -56,7 +56,7 @@ export class PaymentGatewayService {
             name: name,
           },
         ],
-        enabled_payments: ['gopay', 'shopeepay', 'bank_transfer', 'cstore'],
+        enabled_payments: ['gopay'],
       };
 
       const result = await this.snap.createTransaction(parameters);
@@ -77,10 +77,9 @@ export class PaymentGatewayService {
       throw new BadRequestException('Invalid Signature');
     }
     const payment = await this.paymentGatewayRepository.findOne({
-      where: { id: payload.order_id }
+      where: { referenceId: payload.order_id }
     });
     if (!payment) throw new NotFoundException('Payment record not found');
-    console.log(payload);
     const status = payload.transaction_status;
     const fraud = payload.fraud_status;
     let newStatus = 'PENDING';
@@ -92,10 +91,11 @@ export class PaymentGatewayService {
       newStatus = 'FAILED';
     }
 
-    await this.paymentGatewayRepository.update(payment.id, {
-      status: newStatus,
-    });
+    payment.status = newStatus;
+    await this.paymentGatewayRepository.save(payment);
 
+    const listeners = this.eventEmitter.eventNames();
+    console.log('Registered Events:', listeners);
 
     const emitResult = this.eventEmitter.emit('payment.updated', {
       referenceType: payment.referenceType,

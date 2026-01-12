@@ -8,7 +8,7 @@ import { EmployeeModule } from './modules/employee/employee.module';
 import { FinanceModule } from './modules/finance/finance.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 @Module({
-  imports: [TypeOrmModule.forRoot({
+  imports: [EventEmitterModule.forRoot(), TypeOrmModule.forRoot({
     type: 'sqlite',
     database: 'db.sqlite',
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
@@ -16,7 +16,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
   }), ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env',
-  }), AcademicModule, AuthModule, SystemAdminModule, EmployeeModule, FinanceModule, EventEmitterModule.forRoot()],
+  }), AcademicModule, AuthModule, SystemAdminModule, EmployeeModule, FinanceModule,],
   controllers: [],
   providers: [],
 })
