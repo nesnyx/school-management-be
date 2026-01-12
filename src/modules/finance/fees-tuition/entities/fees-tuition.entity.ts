@@ -6,7 +6,7 @@ export class FeesTuition {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ nullable: true })
     invoiceId: string
 
     @Column()

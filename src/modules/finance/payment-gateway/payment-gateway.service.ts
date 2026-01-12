@@ -3,13 +3,12 @@ import * as midtransClient from 'midtrans-client';
 import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FeesTuition } from '../fees-tuition/entities/fees-tuition.entity';
+
 import { PaymentGateway, ReferenceType } from './entities/payment-gateway.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 @Injectable()
 export class PaymentGatewayService {
-  constructor(@InjectRepository(FeesTuition)
-  private feesTuitionRepository: Repository<FeesTuition>,
+  constructor(
     @InjectRepository(PaymentGateway)
     private paymentGatewayRepository: Repository<PaymentGateway>,
     private eventEmitter: EventEmitter2) { }
@@ -42,7 +41,7 @@ export class PaymentGatewayService {
     return await this.paymentGatewayRepository.save(payment);
   }
 
-  async createTransaction(orderId: string, amount: number) {
+  async createTransaction(orderId: string, amount: number, name: string) {
     try {
       const parameters = {
         transaction_details: {
@@ -52,8 +51,9 @@ export class PaymentGatewayService {
         item_details: [
           {
             id: orderId,
+            quantity: 1,
             price: amount,
-
+            name: name,
           },
         ],
         enabled_payments: ['gopay', 'shopeepay', 'bank_transfer', 'cstore'],
@@ -97,15 +97,14 @@ export class PaymentGatewayService {
     });
 
 
-    this.eventEmitter.emit('payment.updated', {
+    const emitResult = this.eventEmitter.emit('payment.updated', {
       referenceType: payment.referenceType,
       referenceId: payment.referenceId,
       status: newStatus,
       midtransTransactionId: payload.transaction_id,
       paymentType: payload.payment_type,
     });
-
-
+    console.log('Emit Result:', emitResult);
 
 
     return { status: 'OK' };

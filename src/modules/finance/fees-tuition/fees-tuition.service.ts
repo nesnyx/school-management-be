@@ -16,43 +16,49 @@ export class FeesTuitionService {
 
   ) { }
 
-
-  @OnEvent('payment.updated')
+  @OnEvent('payment.updated', { async: true })
   async handlePaymentUpdated(payload: any) {
-    const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
-    if (referenceType == ReferenceType.FEES_TUITION) {
-      await this.feesTuitionRepository.update(referenceId, {
-        status: status,
-        midtransTransactionId: midtransTransactionId,
-        paymentType: paymentType,
-      });
+    try {
+      const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
+      if (referenceType === ReferenceType.FEES_TUITION) {
+        await this.feesTuitionRepository.update(referenceId, {
+          status: status,
+          midtransTransactionId: midtransTransactionId,
+          paymentType: paymentType,
+        });
+        console.log(`✅ Database Updated: Fees Tuition ${referenceId} to ${status}`);
+      }
+    } catch (error) {
+      console.error('❌ Error in Event Listener:', error);
     }
-    console.log(`Fees Tuition ${referenceId} updated to ${status}`);
   }
 
   async create(createFeesTuitionDto: CreateFeesTuitionDto) {
+    const orderId = generateOrderId('FEES');
     const feesTuition = this.feesTuitionRepository.create({
       ...createFeesTuitionDto,
       invoiceId: this.paymentGatewayService.generateInvoiceNumber(),
       status: 'PENDING',
     });
-    const orderId = generateOrderId('FEES');
     const savedOrder = await this.feesTuitionRepository.save(feesTuition);
+
     const payment = await this.paymentGatewayService.createPayment(
-      savedOrder.amount,
+      createFeesTuitionDto.amount,
       ReferenceType.FEES_TUITION,
       savedOrder.id,
       'PENDING'
     );
 
+    console.log('Payment Record Created:', payment);
+
     const midtransRes = await this.paymentGatewayService.createTransaction(
       orderId,
-      payment.amount
+      payment.amount,
+      ReferenceType.FEES_TUITION
     );
     return {
       message: 'Checkout berhasil',
       data: savedOrder,
-      midtrans: midtransRes,
       midtrans_token: midtransRes.token,
       redirect_url: midtransRes.redirect_url
     };
