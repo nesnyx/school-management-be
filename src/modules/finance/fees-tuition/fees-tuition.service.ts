@@ -20,9 +20,7 @@ export class FeesTuitionService {
   async handlePaymentUpdated(payload: any) {
     try {
       const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
-
       if (referenceType === ReferenceType.FEES_TUITION) {
-        // Pastikan referenceId adalah tipe yang tepat (string/number)
         await this.feesTuitionRepository.update(referenceId, {
           status: status,
           midtransTransactionId: midtransTransactionId,
