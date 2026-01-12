@@ -1,10 +1,11 @@
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 export enum ReferenceType {
     FEES_TUITION = 'FEES_TUITION',
     DONATION = 'DONATION'
 }
 
+@Entity('payments')
 export class PaymentGateway {
 
     @PrimaryGeneratedColumn()

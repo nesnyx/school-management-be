@@ -6,6 +6,7 @@ import { AuthModule } from './core/auth/auth.module';
 import { SystemAdminModule } from './modules/system-admin/system-admin.module';
 import { EmployeeModule } from './modules/employee/employee.module';
 import { FinanceModule } from './modules/finance/finance.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 @Module({
   imports: [TypeOrmModule.forRoot({
     type: 'sqlite',
@@ -15,7 +16,7 @@ import { FinanceModule } from './modules/finance/finance.module';
   }), ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env',
-  }), AcademicModule, AuthModule, SystemAdminModule, EmployeeModule, FinanceModule],
+  }), AcademicModule, AuthModule, SystemAdminModule, EmployeeModule, FinanceModule, EventEmitterModule.forRoot()],
   controllers: [],
   providers: [],
 })
