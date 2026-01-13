@@ -66,4 +66,8 @@ export class PresenceStudentService {
     limit.setHours(7, 0, 0);
     return time > limit ? 'TERLAMBAT' : 'HADIR';
   }
+
+  async findAll() {
+    return await this.presenceStudentRepository.find();
+  }
 } 

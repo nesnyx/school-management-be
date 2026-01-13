@@ -13,7 +13,7 @@ export class FeesTuitionController {
   }
 
   @Get(':id')
-  async getStatus(@Param('id') id: number) {
+  async getStatus(@Param('id') id: string) {
     return await this.feesTuitionService.findOne(id);
   }
 }
