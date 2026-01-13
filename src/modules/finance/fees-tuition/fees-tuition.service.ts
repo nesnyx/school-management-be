@@ -4,9 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FeesTuition } from './entities/fees-tuition.entity';
 import { Repository } from 'typeorm';
 import { PaymentGatewayService } from '../payment-gateway/payment-gateway.service';
-import { generateOrderId } from 'src/common/helpers/order-id.helper';
 import { ReferenceType } from '../payment-gateway/entities/payment-gateway.entity';
 import { OnEvent } from '@nestjs/event-emitter';
+
 @Injectable()
 export class FeesTuitionService {
   constructor(
@@ -18,9 +18,7 @@ export class FeesTuitionService {
 
   @OnEvent('payment.updated', { async: true })
   async handlePaymentUpdated(payload: any) {
-    console.log('Listener diterima!');
     try {
-      console.log('PAYLOAD EVENT DITERIMA:', payload);
       const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
       if (referenceType === ReferenceType.FEES_TUITION) {
         await this.feesTuitionRepository.update(referenceId, {
@@ -28,10 +26,8 @@ export class FeesTuitionService {
           midtransTransactionId: midtransTransactionId,
           paymentType: paymentType,
         });
-        console.log(`✅ Database Updated: Fees Tuition ${referenceId} to ${status}`);
       }
     } catch (error) {
-      console.error('❌ Error in Event Listener:', error);
     }
   }
 
@@ -54,7 +50,7 @@ export class FeesTuitionService {
       ReferenceType.FEES_TUITION
     );
     return {
-      message: 'Checkout berhasil',
+      message: 'Checkout Fees Tuition berhasil',
       data: savedOrder,
       midtrans_token: midtransRes.token,
       redirect_url: midtransRes.redirect_url

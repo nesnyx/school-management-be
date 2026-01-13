@@ -24,7 +24,6 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Menerapkan middleware ke semua route ('*')
     consumer
       .apply(LoggerMiddleware)
       .forRoutes('*');
