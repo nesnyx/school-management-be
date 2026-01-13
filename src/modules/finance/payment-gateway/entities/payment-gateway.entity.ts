@@ -21,6 +21,6 @@ export class PaymentGateway {
     referenceType: ReferenceType;
 
     @Column()
-    referenceId: number;
+    referenceId: string;
 
 }

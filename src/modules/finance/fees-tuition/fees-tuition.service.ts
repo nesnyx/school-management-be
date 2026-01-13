@@ -18,7 +18,9 @@ export class FeesTuitionService {
 
   @OnEvent('payment.updated', { async: true })
   async handlePaymentUpdated(payload: any) {
+    console.log('Listener diterima!');
     try {
+      console.log('PAYLOAD EVENT DITERIMA:', payload);
       const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
       if (referenceType === ReferenceType.FEES_TUITION) {
         await this.feesTuitionRepository.update(referenceId, {
@@ -34,25 +36,20 @@ export class FeesTuitionService {
   }
 
   async create(createFeesTuitionDto: CreateFeesTuitionDto) {
-    const orderId = generateOrderId('FEES');
     const feesTuition = this.feesTuitionRepository.create({
       ...createFeesTuitionDto,
       invoiceId: this.paymentGatewayService.generateInvoiceNumber(),
       status: 'PENDING',
     });
     const savedOrder = await this.feesTuitionRepository.save(feesTuition);
-
     const payment = await this.paymentGatewayService.createPayment(
       createFeesTuitionDto.amount,
       ReferenceType.FEES_TUITION,
       savedOrder.id,
       'PENDING'
     );
-
-    console.log('Payment Record Created:', payment);
-
     const midtransRes = await this.paymentGatewayService.createTransaction(
-      orderId,
+      savedOrder.id,
       payment.amount,
       ReferenceType.FEES_TUITION
     );
@@ -64,7 +61,7 @@ export class FeesTuitionService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.feesTuitionRepository.findOne({ where: { id } });
   }
 }

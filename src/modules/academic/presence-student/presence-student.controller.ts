@@ -12,4 +12,8 @@ export class PresenceStudentController {
     return await this.presenceStudentService.recordPresence(createPresenceStudentDto);
   }
 
+  @Get()
+  async findAll() {
+    return await this.presenceStudentService.findAll();
+  }
 }
