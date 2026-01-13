@@ -93,10 +93,6 @@ export class PaymentGatewayService {
 
     payment.status = newStatus;
     await this.paymentGatewayRepository.save(payment);
-
-    const listeners = this.eventEmitter.eventNames();
-    console.log('Registered Events:', listeners);
-
     const emitResult = this.eventEmitter.emit('payment.updated', {
       referenceType: payment.referenceType,
       referenceId: payment.referenceId,
