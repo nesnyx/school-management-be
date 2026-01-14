@@ -8,8 +8,8 @@ export enum ReferenceType {
 @Entity('payments')
 export class PaymentGateway {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
     amount: number;
@@ -20,7 +20,10 @@ export class PaymentGateway {
     @Column()
     referenceType: ReferenceType;
 
+
     @Column()
     referenceId: string;
 
+    @Column({ nullable: true })
+    redirectUrl: string;
 }

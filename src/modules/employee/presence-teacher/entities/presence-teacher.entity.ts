@@ -4,19 +4,19 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 @Entity("presence_teachers")
 export class PresenceTeacher {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
-    teacherId: number;
+    teacherId: string;
 
-    @Column({ type: 'varchar', length: 10 })
+    @Column({ type: 'date' })
     date: string;
 
-    @Column({ type: 'datetime', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     timeIn: Date;
 
-    @Column({ type: 'datetime', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     timeOut: Date;
 
     @Column()

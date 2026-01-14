@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AcademicModule } from './modules/academic/academic.module';
 import { AuthModule } from './core/auth/auth.module';
 import { SystemAdminModule } from './modules/system-admin/system-admin.module';
@@ -10,21 +10,36 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { HealthModule } from './modules/health/health.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 @Module({
-  imports: [EventEmitterModule.forRoot(), TypeOrmModule.forRoot({
-    type: 'sqlite',
-    database: 'db.sqlite',
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    synchronize: true,
-  }), ConfigModule.forRoot({
-    isGlobal: true,
-    envFilePath: '.env',
-  }), AcademicModule, AuthModule, SystemAdminModule, EmployeeModule, FinanceModule, HealthModule],
-  controllers: [],
-  providers: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.get<string>('DB_HOST'),
+        port: config.get<number>('DB_PORT'),
+        username: config.get<string>('DB_USER'),
+        password: config.get<string>('DB_PASS'),
+        database: config.get<string>('DB_NAME'),
+        autoLoadEntities: true,
+        synchronize: true,
+      }),
+    }),
+
+    EventEmitterModule.forRoot(),
+    AcademicModule,
+    AuthModule,
+    SystemAdminModule,
+    EmployeeModule,
+    FinanceModule,
+    HealthModule,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Menerapkan middleware ke semua route ('*')
     consumer
       .apply(LoggerMiddleware)
       .forRoutes('*');

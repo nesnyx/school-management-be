@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import * as midtransClient from 'midtrans-client';
 import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 import { PaymentGateway, ReferenceType } from './entities/payment-gateway.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -31,14 +31,15 @@ export class PaymentGatewayService {
   }
 
 
-  async createPayment(amount: number, referenceType: ReferenceType, referenceId: string, status: string) {
-    const payment = this.paymentGatewayRepository.create({
+  async createPayment(amount: number, referenceType: ReferenceType, referenceId: string, status: string, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(PaymentGateway) : this.paymentGatewayRepository;
+    const payment = repo.create({
       amount,
       referenceType,
       referenceId,
       status,
     });
-    return await this.paymentGatewayRepository.save(payment);
+    return await repo.save(payment);
   }
 
   async createTransaction(orderId: string, amount: number, name: string) {
@@ -60,7 +61,7 @@ export class PaymentGatewayService {
       };
 
       const result = await this.snap.createTransaction(parameters);
-
+      await this.paymentGatewayRepository.update({ referenceId: orderId }, { redirectUrl: result.redirect_url });
       return result;
     } catch (error: any) {
       console.error('Midtrans Error:', error.message);
