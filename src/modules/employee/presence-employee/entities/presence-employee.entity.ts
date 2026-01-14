@@ -3,14 +3,14 @@ import { PrimaryGeneratedColumn, Column, Entity } from "typeorm";
 @Entity("presence_employees")
 export class PresenceEmployee {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
-    staffId: number;
+    staffId: string;
 
     @Column()
-    rfidId: number;
+    rfidId: string;
 
     @Column({ type: 'date' })
     date: string;

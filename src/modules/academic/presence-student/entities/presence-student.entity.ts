@@ -3,11 +3,11 @@ import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 
 @Entity("presence_students")
 export class PresenceStudent {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
-    studentId: number;
+    studentId: string;
 
     @Column({ type: 'date' })
     date: string;

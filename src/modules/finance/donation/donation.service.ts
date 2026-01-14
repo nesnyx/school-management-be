@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { PaymentGatewayService } from '../payment-gateway/payment-gateway.service';
 import { ReferenceType } from '../payment-gateway/entities/payment-gateway.entity';
 import { OnEvent } from '@nestjs/event-emitter';
+import { DataSource } from 'typeorm/browser';
 
 
 @Injectable()
@@ -13,7 +14,8 @@ export class DonationService {
   constructor(
     @InjectRepository(Donation)
     private donationRepository: Repository<Donation>,
-    private paymentGatewayService: PaymentGatewayService
+    private paymentGatewayService: PaymentGatewayService,
+    private dataSource: DataSource
   ) { }
 
 
@@ -33,22 +35,33 @@ export class DonationService {
   }
 
   async create(createDonationDto: CreateDonationDto) {
-    const donation = this.donationRepository.create({
-      amount: createDonationDto.amount,
-      status: 'PENDING'
-    });
-    const savedDonation = await this.donationRepository.save(donation);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const donation = queryRunner.manager.create(Donation, {
+        amount: createDonationDto.amount,
+        status: 'PENDING'
+      });
+      const savedDonation = await queryRunner.manager.save(donation);
 
-    const payment = await this.paymentGatewayService.createPayment(createDonationDto.amount, ReferenceType.DONATION, savedDonation.id, 'PENDING');
+      const payment = await this.paymentGatewayService.createPayment(createDonationDto.amount, ReferenceType.DONATION, savedDonation.id, 'PENDING', queryRunner.manager);
 
-    const midtransRes = await this.paymentGatewayService.createTransaction(savedDonation.id, payment.amount, ReferenceType.DONATION)
+      const midtransRes = await this.paymentGatewayService.createTransaction(savedDonation.id, payment.amount, ReferenceType.DONATION)
 
-    return {
-      message: 'Donation berhasil',
-      data: savedDonation,
-      midtrans_token: midtransRes.token,
-      redirect_url: midtransRes.redirect_url
-    };
+      await queryRunner.commitTransaction();
+      return {
+        message: 'Donation berhasil',
+        data: savedDonation,
+        midtrans_token: midtransRes.token,
+        redirect_url: midtransRes.redirect_url
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
 
   }
 

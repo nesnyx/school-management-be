@@ -1,9 +1,3 @@
 
 
-export class AccessControl {
-
-
-
-
-
-}
+export class AccessControl { }

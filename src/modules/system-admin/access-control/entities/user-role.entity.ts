@@ -4,14 +4,14 @@ import { Roles } from "../entities/roles.entity";
 
 @Entity('user_roles')
 export class UserRole {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
-    userId: number;
+    userId: string;
 
     @Column()
-    roleId: number;
+    roleId: string;
 
     @ManyToOne(() => User, (user) => user.userRoles)
     user: User;
