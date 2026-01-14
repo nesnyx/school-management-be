@@ -35,11 +35,11 @@ export class ParentsService {
     return await this.parentRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.parentRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateParentDto: UpdateParentDto) {
+  async update(id: string, updateParentDto: UpdateParentDto) {
     const existingParent = await this.parentRepository.findOne({ where: { id } });
     if (!existingParent) {
       throw new NotFoundException('Parent not found');
@@ -48,7 +48,7 @@ export class ParentsService {
     return await this.parentRepository.save(updated);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const existingParent = await this.parentRepository.findOne({ where: { id } });
     if (!existingParent) {
       throw new NotFoundException('Parent not found');

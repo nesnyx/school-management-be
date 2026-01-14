@@ -33,15 +33,15 @@ export class StudentsService {
     return await this.studentRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.studentRepository.findOne({ where: { id } });
   }
 
-  async findOneByUserId(id: number) {
+  async findOneByUserId(id: string) {
     return await this.studentRepository.findOne({ where: { userId: id } });
   }
 
-  async update(id: number, updateStudentDto: UpdateStudentDto) {
+  async update(id: string, updateStudentDto: UpdateStudentDto) {
     const existingStudent = await this.studentRepository.findOne({ where: { id } });
     if (!existingStudent) {
       throw new Error('Student not found');
@@ -50,7 +50,7 @@ export class StudentsService {
     return await this.studentRepository.save(updated);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const existingStudent = await this.studentRepository.findOne({ where: { id } });
     if (!existingStudent) {
       throw new Error('Student not found');

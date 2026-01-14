@@ -6,6 +6,6 @@ export class AssignRfidDto {
     rfid: string;
 
     @IsNotEmpty()
-    @IsNumber()
-    userId: number;
+    @IsString()
+    userId: string;
 }

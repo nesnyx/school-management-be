@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { PaymentGatewayService } from '../payment-gateway/payment-gateway.service';
 import { ReferenceType } from '../payment-gateway/entities/payment-gateway.entity';
 import { OnEvent } from '@nestjs/event-emitter';
-import { DataSource } from 'typeorm/browser';
+import { DataSource } from 'typeorm';
 
 
 @Injectable()
