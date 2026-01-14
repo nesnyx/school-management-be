@@ -3,8 +3,8 @@ import { User } from '../../../system-admin/users/entities/user.entity';
 
 @Entity('students')
 export class Student {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column({ unique: true })
     nis: string;
@@ -13,7 +13,7 @@ export class Student {
     fullName: string;
 
     @Column()
-    userId: number;
+    userId: string
 
     @CreateDateColumn()
     createdAt: Date;

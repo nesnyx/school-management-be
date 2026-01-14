@@ -3,8 +3,8 @@ import { User } from "../../users/entities/user.entity";
 
 @Entity('rfid_cards')
 export class RfidCard {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column({ unique: true })
     rfidUuid: string;
@@ -13,7 +13,7 @@ export class RfidCard {
     status: 'ACTIVE' | 'INACTIVE' | 'LOST';
 
     @Column()
-    userId: number;
+    userId: string;
 
     @ManyToOne(() => User, (user) => user.rfidCards)
     @JoinColumn({ name: 'userId' })

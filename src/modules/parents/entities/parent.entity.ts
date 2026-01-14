@@ -3,8 +3,8 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGenerate
 
 @Entity("parents")
 export class Parent {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
     telp: string;
@@ -14,7 +14,7 @@ export class Parent {
 
 
     @Column()
-    userId: number;
+    userId: string;
 
 
     @CreateDateColumn()

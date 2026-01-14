@@ -3,8 +3,8 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGenerate
 
 @Entity("staff")
 export class Staff {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column()
     username: string;
@@ -13,7 +13,7 @@ export class Staff {
     fullName: string;
 
     @Column()
-    userId: number;
+    userId: string;
 
     @CreateDateColumn()
     createdAt: Date;

@@ -4,9 +4,10 @@ import { AccessControlController } from './access-control.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Roles } from './entities/roles.entity';
 import { UsersModule } from '../users/users.module';
+import { UserRole } from './entities/user-role.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Roles]), UsersModule],
+  imports: [TypeOrmModule.forFeature([Roles, UserRole]), UsersModule],
   controllers: [AccessControlController],
   providers: [AccessControlService],
 })
