@@ -20,7 +20,10 @@ export class PaymentGateway {
     @Column()
     referenceType: ReferenceType;
 
+
     @Column()
     referenceId: string;
 
+    @Column({ nullable: true })
+    redirectUrl: string;
 }

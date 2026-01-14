@@ -12,13 +12,13 @@ export class PresenceEmployee {
     @Column()
     rfidId: number;
 
-    @Column()
+    @Column({ type: 'date' })
     date: string;
 
-    @Column()
+    @Column({ type: 'timestamp', nullable: true })
     timeIn: Date;
 
-    @Column()
+    @Column({ type: 'timestamp', nullable: true })
     timeOut: Date;
 
     @Column()

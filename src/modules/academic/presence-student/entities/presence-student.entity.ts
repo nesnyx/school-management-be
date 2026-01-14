@@ -9,13 +9,14 @@ export class PresenceStudent {
     @Column()
     studentId: number;
 
-    @Column({ type: 'varchar', length: 10 })
+    @Column({ type: 'date' })
     date: string;
 
-    @Column({ type: 'datetime', nullable: true })
+
+    @Column({ type: 'timestamp', nullable: true })
     timeIn: Date;
 
-    @Column({ type: 'datetime', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     timeOut: Date;
 
     @Column()

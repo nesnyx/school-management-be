@@ -60,7 +60,7 @@ export class PaymentGatewayService {
       };
 
       const result = await this.snap.createTransaction(parameters);
-
+      await this.paymentGatewayRepository.update({ referenceId: orderId }, { redirectUrl: result.redirect_url });
       return result;
     } catch (error: any) {
       console.error('Midtrans Error:', error.message);
