@@ -5,10 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 import { PaymentGateway } from './entities/payment-gateway.entity';
+import { BullModule } from '@nestjs/bullmq';
+import { PaymentProcessor } from './payment-gateway.processor';
 @Module({
-  imports: [TypeOrmModule.forFeature([PaymentGateway])],
+  imports: [BullModule.registerQueue({
+    name: 'payment-queue'
+  }), TypeOrmModule.forFeature([PaymentGateway])],
   controllers: [PaymentGatewayController],
-  providers: [PaymentGatewayService],
+  providers: [PaymentGatewayService, PaymentProcessor],
   exports: [PaymentGatewayService]
 })
 export class PaymentGatewayModule { }

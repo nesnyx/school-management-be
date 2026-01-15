@@ -50,7 +50,7 @@ export class FeesTuitionService {
         queryRunner.manager,
       );
       const midtransRes = await this.paymentGatewayService.createTransaction(
-        savedOrder.id,
+        payment.id,
         payment.amount,
         ReferenceType.FEES_TUITION
       );

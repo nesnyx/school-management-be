@@ -21,17 +21,15 @@ export class DonationService {
 
   @OnEvent('payment.updated', { async: true })
   async handlePaymentUpdated(payload: any) {
-    try {
-      const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
-      if (referenceType === ReferenceType.DONATION) {
-        await this.donationRepository.update(referenceId, {
-          status: status,
-          midtransTransactionId: midtransTransactionId,
-          paymentType: paymentType,
-        });
-      }
-    } catch (error) {
+    const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
+    if (referenceType === ReferenceType.DONATION) {
+      await this.donationRepository.update(referenceId, {
+        status: status,
+        midtransTransactionId: midtransTransactionId,
+        paymentType: paymentType,
+      });
     }
+    console.log(`[Queue/Event] Donation ${referenceId} updated to ${status}`);
   }
 
   async create(createDonationDto: CreateDonationDto) {
