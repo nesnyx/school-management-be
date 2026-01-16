@@ -26,15 +26,15 @@ export class AccessControlService {
     return await this.rolesRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.rolesRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateAccessControlDto: UpdateAccessControlDto) {
+  async update(id: string, updateAccessControlDto: UpdateAccessControlDto) {
     return await this.rolesRepository.update(id, updateAccessControlDto);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.rolesRepository.delete(id);
   }
 }

@@ -26,13 +26,13 @@ export class PresenceTeacherService {
     }
     const teacher = await this.teacherService.findOneByUserId(user.id)
     if (!teacher) throw new NotFoundException('Data guru tidak ditemukan');
-    let presence = await this.presenceTeacherRepository.findOne({ where: { teacherId: Number(teacher.id), date: today } })
+    let presence = await this.presenceTeacherRepository.findOne({ where: { teacherId: teacher.id, date: today } })
     if (!presence) {
       if (currentHour > 9) {
         throw new BadRequestException('Sudah siang, tidak bisa absen masuk!');
       }
       const newPresence = this.presenceTeacherRepository.create({
-        teacherId: Number(teacher.id),
+        teacherId: teacher.id,
         date: today,
         timeIn: now,
         status: this.calculateStatus(now),

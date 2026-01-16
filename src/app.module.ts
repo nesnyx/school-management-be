@@ -9,6 +9,7 @@ import { FinanceModule } from './modules/finance/finance.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { HealthModule } from './modules/health/health.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { BullModule } from '@nestjs/bullmq';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +31,12 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     }),
 
     EventEmitterModule.forRoot(),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     AcademicModule,
     AuthModule,
     SystemAdminModule,

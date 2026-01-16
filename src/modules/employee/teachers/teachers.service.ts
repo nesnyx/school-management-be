@@ -36,15 +36,15 @@ export class TeachersService {
     return await this.teacherRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.teacherRepository.findOne({ where: { id } });
   }
 
-  async findOneByUserId(id: number) {
+  async findOneByUserId(id: string) {
     return await this.teacherRepository.findOne({ where: { userId: id } });
   }
 
-  async update(id: number, updateTeacherDto: UpdateTeacherDto) {
+  async update(id: string, updateTeacherDto: UpdateTeacherDto) {
     const existingTeacher = await this.teacherRepository.findOne({ where: { id } });
     if (!existingTeacher) {
       throw new NotFoundException('Teacher not found');
@@ -53,7 +53,7 @@ export class TeachersService {
     return await this.teacherRepository.save(updated);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const existingTeacher = await this.teacherRepository.findOne({ where: { id } });
     if (!existingTeacher) {
       throw new NotFoundException('Teacher not found');

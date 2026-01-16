@@ -19,17 +19,17 @@ export class AccessControlController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: string) {
     return await this.accessControlService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateAccessControlDto: UpdateAccessControlDto) {
+  async update(@Param('id') id: string, @Body() updateAccessControlDto: UpdateAccessControlDto) {
     return await this.accessControlService.update(id, updateAccessControlDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  async remove(@Param('id') id: string) {
     return await this.accessControlService.remove(id);
   }
 }

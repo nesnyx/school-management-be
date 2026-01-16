@@ -27,13 +27,13 @@ export class PresenceEmployeeService {
     }
     const staff = await this.staffService.findOneByUserId(user.id)
     if (!staff) throw new NotFoundException('Data staf tidak ditemukan');
-    let presence = await this.presenceEmployeeRepository.findOne({ where: { staffId: Number(staff.id), date: today } })
+    let presence = await this.presenceEmployeeRepository.findOne({ where: { staffId: staff.id, date: today } })
     if (!presence) {
       if (currentHour > 9) {
         throw new BadRequestException('Sudah siang, tidak bisa absen masuk!');
       }
       const newPresence = this.presenceEmployeeRepository.create({
-        staffId: Number(staff.id),
+        staffId: staff.id,
         date: today,
         timeIn: now,
         status: this.calculateStatus(now),

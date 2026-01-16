@@ -18,17 +18,17 @@ export class StaffController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: string) {
     return await this.staffService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateStaffDto: UpdateStaffDto) {
+  async update(@Param('id') id: string, @Body() updateStaffDto: UpdateStaffDto) {
     return await this.staffService.update(id, updateStaffDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  async remove(@Param('id') id: string) {
     return await this.staffService.remove(id);
   }
 }

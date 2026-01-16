@@ -38,7 +38,7 @@ export class StaffService {
     return await this.staffRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const staff = await this.staffRepository.findOne({ where: { id } });
     if (!staff) {
       throw new NotFoundException('Staff not found');
@@ -46,14 +46,14 @@ export class StaffService {
     return staff;
   }
 
-  async findOneByUserId(id: number) {
+  async findOneByUserId(id: string) {
     const staff = await this.staffRepository.findOne({ where: { userId: id } });
     if (!staff) {
       throw new NotFoundException('Staff not found');
     }
     return staff;
   }
-  async update(id: number, updateStaffDto: UpdateStaffDto) {
+  async update(id: string, updateStaffDto: UpdateStaffDto) {
     const staff = await this.staffRepository.findOne({ where: { id } });
     if (!staff) {
       throw new NotFoundException('Staff not found');
@@ -62,7 +62,7 @@ export class StaffService {
     return await this.staffRepository.save(update);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const staff = await this.staffRepository.findOne({ where: { id } });
     if (!staff) {
       throw new NotFoundException('Staff not found');

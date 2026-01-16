@@ -26,4 +26,7 @@ export class PaymentGateway {
 
     @Column({ nullable: true })
     redirectUrl: string;
+
+    @Column({ nullable: true })
+    snapToken : string
 }
