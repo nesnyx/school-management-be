@@ -7,13 +7,22 @@ import { CreateFeesTuitionDto } from './dto/create-fees-tuition.dto';
 export class FeesTuitionController {
   constructor(private readonly feesTuitionService: FeesTuitionService) { }
 
-  @Post('checkout')
-  async checkout(@Body() createFeesTuitionDto: CreateFeesTuitionDto) {
-    return await this.feesTuitionService.create(createFeesTuitionDto);
+
+  @Get()
+  async getAll(){
+    return await this.feesTuitionService.findAll()
   }
 
   @Get(':id')
   async getStatus(@Param('id') id: string) {
     return await this.feesTuitionService.findOne(id);
   }
+
+  
+  @Post('checkout')
+  async checkout(@Body() createFeesTuitionDto: CreateFeesTuitionDto) {
+    return await this.feesTuitionService.create(createFeesTuitionDto);
+  }
+
+  
 }

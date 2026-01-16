@@ -17,7 +17,7 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.userRepository.findOneBy({ id });
   }
 
@@ -25,7 +25,7 @@ export class UsersService {
     return await this.userRepository.findOneBy({ identifier });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -34,7 +34,7 @@ export class UsersService {
     return await this.userRepository.save(mergedUser);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.userRepository.delete({ id });
   }
 }

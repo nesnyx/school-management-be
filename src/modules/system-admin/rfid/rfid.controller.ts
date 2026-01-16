@@ -24,17 +24,17 @@ export class RfidController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: string) {
     return await this.rfidService.findRfidById(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() rfid: string) {
+  async update(@Param('id') id: string, @Body() rfid: string) {
     return await this.rfidService.updateRfid(id, rfid);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  async remove(@Param('id') id: string) {
     return await this.rfidService.removeRfid(id);
   }
 }

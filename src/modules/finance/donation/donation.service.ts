@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { PaymentGatewayService } from '../payment-gateway/payment-gateway.service';
 import { ReferenceType } from '../payment-gateway/entities/payment-gateway.entity';
 import { OnEvent } from '@nestjs/event-emitter';
-import { DataSource } from 'typeorm/browser';
+import { DataSource } from 'typeorm';
 
 
 @Injectable()
@@ -19,19 +19,22 @@ export class DonationService {
   ) { }
 
 
-  @OnEvent('payment.updated', { async: true })
+  @OnEvent(`payment.updated.${ReferenceType.DONATION}`, { async: true })
   async handlePaymentUpdated(payload: any) {
-    try {
-      const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
-      if (referenceType === ReferenceType.DONATION) {
-        await this.donationRepository.update(referenceId, {
-          status: status,
-          midtransTransactionId: midtransTransactionId,
-          paymentType: paymentType,
-        });
-      }
-    } catch (error) {
+    const { referenceId, status, midtransTransactionId, paymentType } = payload;
+    const target = await this.donationRepository.findOne({
+      where: { id: referenceId }
+    })
+    if (target?.status === 'SUCCESS') {
+      return;
     }
+    await this.donationRepository.update(referenceId, {
+      status: status,
+      midtransTransactionId: midtransTransactionId,
+      paymentType: paymentType,
+    });
+
+
   }
 
   async create(createDonationDto: CreateDonationDto) {

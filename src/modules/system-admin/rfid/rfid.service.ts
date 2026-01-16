@@ -66,11 +66,11 @@ export class RfidService {
 
     return card;
   }
-  async findRfidById(id: number) {
+  async findRfidById(id: string) {
     return await this.rfidRepository.findOne({ where: { id } });
   }
 
-  async updateRfid(id: number, rfid: string) {
+  async updateRfid(id: string, rfid: string) {
     const existingRfid = await this.rfidRepository.findOne({ where: { id } });
     if (!existingRfid) {
       throw new Error('Rfid not found');
@@ -79,7 +79,7 @@ export class RfidService {
     return await this.rfidRepository.save(existingRfid);
   }
 
-  async removeRfid(id: number) {
+  async removeRfid(id: string) {
     return await this.rfidRepository.delete(id);
   }
 }

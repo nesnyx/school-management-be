@@ -18,17 +18,17 @@ export class ParentsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: string) {
     return await this.parentsService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateParentDto: UpdateParentDto) {
+  async update(@Param('id') id: string, @Body() updateParentDto: UpdateParentDto) {
     return await this.parentsService.update(id, updateParentDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  async remove(@Param('id') id: string) {
     return await this.parentsService.remove(id);
   }
 }
