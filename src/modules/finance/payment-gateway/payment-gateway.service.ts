@@ -34,6 +34,12 @@ export class PaymentGatewayService {
 
   async createPayment(amount: number, referenceType: ReferenceType, referenceId: string, status: string, manager?: EntityManager) {
     const repo = manager ? manager.getRepository(PaymentGateway) : this.paymentGatewayRepository;
+    const existingPayment = await repo.findOne({
+      where: { referenceId, referenceType, status: 'PENDING' }
+    });
+    if (existingPayment) {
+      return existingPayment;
+    }
     const payment = repo.create({
       amount,
       referenceType,
@@ -45,6 +51,13 @@ export class PaymentGatewayService {
 
   async createTransaction(orderId: string, amount: number, name: string) {
     try {
+      const existing = await this.paymentGatewayRepository.findOne({ where: { id: orderId } });
+      if (existing?.redirectUrl) {
+        return {
+          token: existing.snapToken,
+          redirect_url: existing.redirectUrl
+        };
+      }
       const parameters = {
         transaction_details: {
           order_id: orderId,
@@ -60,12 +73,10 @@ export class PaymentGatewayService {
         ],
         enabled_payments: ['gopay'],
       };
-
       const result = await this.snap.createTransaction(parameters);
-
       return result;
     } catch (error: any) {
-      console.error('Midtrans Error:', error.message);
+
       throw new BadRequestException('Gagal membuat transaksi ke Midtrans');
     }
   }
@@ -88,6 +99,29 @@ export class PaymentGatewayService {
 
     return { status: 'OK' };
   }
+
+
+  async update(id:string,redirectUrl : string, snapToken:string){
+    const existingPayment = await this.paymentGatewayRepository.findOne({where:{id}})
+    if (!existingPayment) {
+      throw new NotFoundException("Payment Not Existing")
+    }
+    const update = this.paymentGatewayRepository.merge(existingPayment,{
+      redirectUrl : redirectUrl,
+      snapToken : snapToken
+    })
+    return await this.paymentGatewayRepository.save(update)
+  }
+
+
+  async getPaymentByReference(referenceId : string) {
+    const existingPayment = await this.paymentGatewayRepository.findOne({where:{referenceId :referenceId}})
+    if (!existingPayment) {
+      throw new NotFoundException("Payment Not Existing")
+    }
+    return existingPayment
+  }
+
 
 
 }

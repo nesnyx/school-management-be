@@ -18,14 +18,13 @@ export class PaymentProcessor extends WorkerHost {
     }
 
     async process(job: Job<any>): Promise<any> {
-        console.log(`Processing Job ID: ${job.id} for Order: ${job.data.order_id}`);
+
         const payload = job.data;
         const payment = await this.paymentGatewayRepository.findOne({
             where: { id: payload.order_id }
         });
 
         if (!payment) {
-            console.error(`Payment ID ${payload.order_id} not found in DB`);
             throw new Error('Payment not found');
         }
 
@@ -41,7 +40,7 @@ export class PaymentProcessor extends WorkerHost {
         payment.status = newStatus;
         await this.paymentGatewayRepository.save(payment);
 
-        this.eventEmitter.emit('payment.updated', {
+        this.eventEmitter.emit(`payment.updated.${payment.referenceType}`, {
             referenceType: payment.referenceType,
             referenceId: payment.referenceId,
             status: newStatus,
@@ -49,6 +48,6 @@ export class PaymentProcessor extends WorkerHost {
             paymentType: payload.payment_type,
         });
 
-        console.log(`Job ${job.id} processed: Payment ${payment.referenceId} is ${newStatus}`);
+
     }
 }

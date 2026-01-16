@@ -19,17 +19,22 @@ export class DonationService {
   ) { }
 
 
-  @OnEvent('payment.updated', { async: true })
+  @OnEvent(`payment.updated.${ReferenceType.DONATION}`, { async: true })
   async handlePaymentUpdated(payload: any) {
-    const { referenceType, referenceId, status, midtransTransactionId, paymentType } = payload;
-    if (referenceType === ReferenceType.DONATION) {
-      await this.donationRepository.update(referenceId, {
-        status: status,
-        midtransTransactionId: midtransTransactionId,
-        paymentType: paymentType,
-      });
+    const { referenceId, status, midtransTransactionId, paymentType } = payload;
+    const target = await this.donationRepository.findOne({
+      where: { id: referenceId }
+    })
+    if (target?.status === 'SUCCESS') {
+      return;
     }
-    console.log(`[Queue/Event] Donation ${referenceId} updated to ${status}`);
+    await this.donationRepository.update(referenceId, {
+      status: status,
+      midtransTransactionId: midtransTransactionId,
+      paymentType: paymentType,
+    });
+
+
   }
 
   async create(createDonationDto: CreateDonationDto) {
