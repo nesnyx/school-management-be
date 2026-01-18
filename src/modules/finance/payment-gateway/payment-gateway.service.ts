@@ -101,21 +101,21 @@ export class PaymentGatewayService {
   }
 
 
-  async update(id:string,redirectUrl : string, snapToken:string){
-    const existingPayment = await this.paymentGatewayRepository.findOne({where:{id}})
+  async update(id: string, redirectUrl: string, snapToken: string) {
+    const existingPayment = await this.paymentGatewayRepository.findOne({ where: { id } })
     if (!existingPayment) {
       throw new NotFoundException("Payment Not Existing")
     }
-    const update = this.paymentGatewayRepository.merge(existingPayment,{
-      redirectUrl : redirectUrl,
-      snapToken : snapToken
+    const update = this.paymentGatewayRepository.merge(existingPayment, {
+      redirectUrl: redirectUrl,
+      snapToken: snapToken
     })
     return await this.paymentGatewayRepository.save(update)
   }
 
 
-  async getPaymentByReference(referenceId : string) {
-    const existingPayment = await this.paymentGatewayRepository.findOne({where:{referenceId :referenceId}})
+  async getPaymentByReference(referenceId: string) {
+    const existingPayment = await this.paymentGatewayRepository.findOne({ where: { referenceId: referenceId } })
     if (!existingPayment) {
       throw new NotFoundException("Payment Not Existing")
     }
