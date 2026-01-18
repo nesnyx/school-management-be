@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
 import { Repository } from 'typeorm';
 import { PaymentGateway } from './entities/payment-gateway.entity';
-import { NotFoundException } from '@nestjs/common';
 
 @Processor('payment-queue')
 export class PaymentProcessor extends WorkerHost {
@@ -23,11 +22,9 @@ export class PaymentProcessor extends WorkerHost {
         const payment = await this.paymentGatewayRepository.findOne({
             where: { id: payload.order_id }
         });
-
         if (!payment) {
             throw new Error('Payment not found');
         }
-
         const status = payload.transaction_status;
         let newStatus = 'PENDING';
 

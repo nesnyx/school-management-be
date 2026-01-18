@@ -9,7 +9,7 @@ export class FeesTuitionController {
 
 
   @Get()
-  async getAll(){
+  async getAll() {
     return await this.feesTuitionService.findAll()
   }
 
@@ -18,11 +18,11 @@ export class FeesTuitionController {
     return await this.feesTuitionService.findOne(id);
   }
 
-  
+
   @Post('checkout')
   async checkout(@Body() createFeesTuitionDto: CreateFeesTuitionDto) {
     return await this.feesTuitionService.create(createFeesTuitionDto);
   }
 
-  
+
 }
