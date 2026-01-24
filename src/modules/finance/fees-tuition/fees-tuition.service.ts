@@ -109,6 +109,19 @@ export class FeesTuitionService {
   }
 
   async findAll() {
-    return await this.feesTuitionRepository.find()
-  }
+  const result = await this.dataSource.query(`
+    SELECT p."referenceType", p.id AS payment_id,p.amount AS payment_amount, p.status AS payment_status,
+           ft.amount AS tuition_amount,
+           ft.status AS tuition_status,
+           ft."paymentType" AS tuition_payment_type,
+           ft."midtransTransactionId" AS tuition_midtrans_transaction_id,
+           ft."invoiceId" AS tuition_invoice_id,
+           ft.id as tuition_id
+    FROM "payments" p
+    LEFT JOIN "fees_tuitions" ft ON p."referenceId"::uuid = ft.id
+    WHERE p."referenceType" = $1
+  `, [ReferenceType.FEES_TUITION]);
+
+  return result;
+}
 }
