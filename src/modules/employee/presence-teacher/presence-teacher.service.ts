@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { RfidService } from 'src/modules/system-admin/rfid/rfid.service';
 import { TeachersService } from '../teachers/teachers.service';
 import { Role } from 'src/modules/system-admin/users/entities/user.entity';
+import { AccessControlService } from 'src/modules/system-admin/access-control/access-control.service';
 
 @Injectable()
 export class PresenceTeacherService {
@@ -13,7 +14,8 @@ export class PresenceTeacherService {
     @InjectRepository(PresenceTeacher)
     private readonly presenceTeacherRepository: Repository<PresenceTeacher>,
     private readonly rfidService: RfidService,
-    private readonly teacherService: TeachersService
+    private readonly teacherService: TeachersService,
+    private readonly accessControlService : AccessControlService
   ) { }
   async recordPresence(createPresenceTeacherDto: CreatePresenceTeacherDto) {
     const today = new Date().toISOString().split('T')[0];
@@ -21,7 +23,8 @@ export class PresenceTeacherService {
     const currentHour = now.getHours();
     const card = await this.rfidService.findRfidCardByrfId(createPresenceTeacherDto.rfid);
     const user = card.user
-    if (user.role !== Role.GURU) {
+    const accessControlUser = await this.accessControlService.findOneByUserId(user.id)
+    if (accessControlUser?.role.name !== Role.TEACHER) {
       throw new BadRequestException('Kartu ini bukan milik guru');
     }
     const teacher = await this.teacherService.findOneByUserId(user.id)
