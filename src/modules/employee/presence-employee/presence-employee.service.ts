@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PresenceEmployee } from './entities/presence-employee.entity';
 import { Repository } from 'typeorm';
 import { Role } from 'src/modules/system-admin/users/entities/user.entity';
+import { AccessControlService } from 'src/modules/system-admin/access-control/access-control.service';
 
 @Injectable()
 export class PresenceEmployeeService {
@@ -13,7 +14,8 @@ export class PresenceEmployeeService {
     @InjectRepository(PresenceEmployee)
     private readonly presenceEmployeeRepository: Repository<PresenceEmployee>,
     private readonly rfidService: RfidService,
-    private readonly staffService: StaffService
+    private readonly staffService: StaffService,
+    private readonly accessControlService : AccessControlService
   ) { }
 
   async recordPresence(createPresenceEmployeeDto: CreatePresenceEmployeeDto) {
@@ -22,7 +24,8 @@ export class PresenceEmployeeService {
     const currentHour = now.getHours();
     const card = await this.rfidService.findRfidCardByrfId(createPresenceEmployeeDto.rfid);
     const user = card.user
-    if (user.role !== Role.EMPLOYEE) {
+    const accessControlUser = await this.accessControlService.findOneByUserId(user.id)
+    if (accessControlUser?.role.name !== Role.STAFF) {
       throw new BadRequestException('Kartu ini bukan milik staf');
     }
     const staff = await this.staffService.findOneByUserId(user.id)

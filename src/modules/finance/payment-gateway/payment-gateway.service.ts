@@ -123,13 +123,7 @@ export class PaymentGatewayService {
   }
 
 
-  async findAll(referenceType : ReferenceType){
-    return await this.paymentGatewayRepository.find({
-      where:{
-        referenceType:referenceType
-      }
-    })
-  }
+ 
 
 
 }

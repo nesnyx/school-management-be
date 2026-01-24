@@ -6,10 +6,10 @@ import { UserRole } from '../../access-control/entities/user-role.entity';
 
 export enum Role {
     ADMIN = 'ADMIN',
-    EMPLOYEE = 'EMPLOYEE',
-    GURU = 'GURU',
-    SISWA = 'SISWA',
-    ORANG_TUA = 'ORANG_TUA',
+    STAFF = 'STAFF',
+    TEACHER = 'TEACHER',
+    STUDENT = 'STUDENT',
+    PARENT = 'PARENT',
 }
 
 @Entity('users')
@@ -23,12 +23,6 @@ export class User {
 
     @Column()
     password: string;
-
-    @Column({
-        type: 'varchar',
-        default: Role.SISWA,
-    })
-    role: Role;
 
 
     @OneToMany(() => RfidCard, (rfidCard) => rfidCard.user)

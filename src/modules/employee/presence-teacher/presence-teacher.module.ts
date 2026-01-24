@@ -6,8 +6,10 @@ import { TeachersModule } from '../teachers/teachers.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PresenceTeacher } from './entities/presence-teacher.entity';
 
+import { AccessControlModule } from 'src/modules/system-admin/access-control/access-control.module';
+
 @Module({
-  imports: [RfidModule, TeachersModule, TypeOrmModule.forFeature([PresenceTeacher])],
+  imports: [RfidModule, TeachersModule,AccessControlModule, TypeOrmModule.forFeature([PresenceTeacher])],
   controllers: [PresenceTeacherController],
   providers: [PresenceTeacherService],
 })
