@@ -3,16 +3,19 @@ import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
 import { Staff } from './entities/staff.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/modules/system-admin/users/users.service';
 import { Role } from 'src/modules/system-admin/users/entities/user.entity';
+import { AccessControlService } from 'src/modules/system-admin/access-control/access-control.service';
 
 @Injectable()
 export class StaffService {
   constructor(
     @InjectRepository(Staff)
     private staffRepository: Repository<Staff>,
-    private userService: UsersService
+    private userService: UsersService,
+    private dataSource: DataSource,
+    private readonly accessControlService: AccessControlService
   ) { }
 
   private generatePassword() {
@@ -20,18 +23,34 @@ export class StaffService {
   }
 
   async create(createStaffDto: CreateStaffDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     const generatedPassword = this.generatePassword();
-    const user = await this.userService.create({
-      identifier: createStaffDto.username,
-      password: generatedPassword,
-      role: Role.EMPLOYEE,
-    });
-    const staff = this.staffRepository.create({
-      username: createStaffDto.username,
-      fullName: createStaffDto.fullName,
-      userId: user.id
-    })
-    return await this.staffRepository.save(staff);
+    try {
+      const user = await this.userService.create({
+        identifier: createStaffDto.username,
+        password: generatedPassword,
+      }, queryRunner.manager);
+      const staff = this.staffRepository.create({
+        username: createStaffDto.username,
+        fullName: createStaffDto.fullName,
+        userId: user.id
+      })
+      const role = await this.accessControlService.findOneByName(Role.STAFF)
+      if (!role) {
+        throw new NotFoundException("Role doesnt exist")
+      }
+      await queryRunner.manager.save(staff),
+        await this.accessControlService.assignRole(user.id, role.id, queryRunner.manager),
+        await queryRunner.commitTransaction()
+      return staff
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release()
+    }
   }
 
   async findAll() {

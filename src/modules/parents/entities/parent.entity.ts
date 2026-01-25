@@ -1,5 +1,6 @@
 import { User } from "src/modules/system-admin/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { StudentParent } from "./student-parent.entity";
 
 @Entity("parents")
 export class Parent {
@@ -26,4 +27,8 @@ export class Parent {
     @OneToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     user: User;
+
+
+    @OneToMany(() => StudentParent, (studentParent) => studentParent.parent)
+    studentParent: StudentParent[]
 }

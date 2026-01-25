@@ -7,6 +7,7 @@ import { PresenceStudent } from './entities/presence-student.entity';
 import { Repository } from 'typeorm';
 import { Role } from 'src/modules/system-admin/users/entities/user.entity';
 import { StudentsService } from '../students/students.service';
+import { AccessControlService } from 'src/modules/system-admin/access-control/access-control.service';
 
 
 @Injectable()
@@ -15,7 +16,8 @@ export class PresenceStudentService {
     @InjectRepository(PresenceStudent)
     private readonly presenceStudentRepository: Repository<PresenceStudent>,
     private readonly rfidService: RfidService,
-    private readonly studentService: StudentsService) {
+    private readonly studentService: StudentsService,
+    private readonly accessControlService: AccessControlService) {
   }
 
   async recordPresence(createPresenceStudentDto: CreatePresenceStudentDto) {
@@ -24,7 +26,8 @@ export class PresenceStudentService {
     const currentHour = now.getHours();
     const card = await this.rfidService.findRfidCardByrfId(createPresenceStudentDto.rfid);
     const user = card.user
-    if (user.role !== Role.SISWA) {
+    const accessControlUser = await this.accessControlService.findOneByUserId(user.id)
+    if (accessControlUser?.role.name !== Role.STUDENT) {
       throw new BadRequestException('Kartu ini bukan milik siswa');
     }
     const student = await this.studentService.findOneByUserId(user.id)

@@ -3,7 +3,7 @@ import { CreateAccessControlDto, CreateRoleDto } from './dto/create-access-contr
 import { UpdateAccessControlDto } from './dto/update-access-control.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Roles } from './entities/roles.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { UserRole } from './entities/user-role.entity';
 
 
@@ -30,6 +30,23 @@ export class AccessControlService {
     return await this.rolesRepository.findOne({ where: { id } });
   }
 
+  async findOneByName(role: string) {
+    return await this.rolesRepository.findOne({
+      where: {
+        name: role
+      },
+      select: ['id']
+    })
+  }
+
+  async findOneByUserId(userId: string) {
+    return await this.userRoleRepository.findOne({
+      where: {
+        userId: userId
+      },
+    })
+  }
+
   async update(id: string, updateAccessControlDto: UpdateAccessControlDto) {
     return await this.rolesRepository.update(id, updateAccessControlDto);
   }
@@ -37,4 +54,14 @@ export class AccessControlService {
   async remove(id: string) {
     return await this.rolesRepository.delete(id);
   }
-}
+
+
+  async assignRole(userId: string, roleId: string, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(UserRole) : this.userRoleRepository
+    const newUserRole = repo.create({
+      roleId,
+      userId
+    })
+    return await repo.save(newUserRole)
+  }
+} 
