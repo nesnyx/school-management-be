@@ -3,6 +3,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, UpdateDateColumn } from 'typeorm';
 import { RfidCard } from '../../rfid/entities/rfid-cards.entity';
 import { UserRole } from '../../access-control/entities/user-role.entity';
+import { StudentParent } from 'src/modules/parents/entities/student-parent.entity';
 
 export enum Role {
     ADMIN = 'ADMIN',
@@ -36,4 +37,8 @@ export class User {
 
     @OneToMany(() => UserRole, (userRole) => userRole.user)
     userRoles: UserRole[];
+
+
+    @OneToMany (()  => StudentParent, (studentParent) => studentParent.user)
+    studentParent : StudentParent[]
 }

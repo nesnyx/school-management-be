@@ -41,11 +41,9 @@ export class StaffService {
       if (!role) {
         throw new NotFoundException("Role doesnt exist")
       }
-      await Promise.all([
-        queryRunner.manager.save(staff),
-        this.accessControlService.assignRole(user.id, role.id, queryRunner.manager),
-        queryRunner.commitTransaction()
-      ])
+      await queryRunner.manager.save(staff),
+        await this.accessControlService.assignRole(user.id, role.id, queryRunner.manager),
+        await queryRunner.commitTransaction()
       return staff
     } catch (error) {
       await queryRunner.rollbackTransaction();
