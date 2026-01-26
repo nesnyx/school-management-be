@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ParentsService } from './parents.service';
 import { CreateParentDto } from './dto/create-parent.dto';
 import { UpdateParentDto } from './dto/update-parent.dto';
+import { AssignParentDto } from './dto/assign-parent.dto';
 
 @Controller('parents')
 export class ParentsController {
@@ -30,5 +31,10 @@ export class ParentsController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.parentsService.remove(id);
+  }
+
+  @Post("assign")
+  async assign(@Body() assignParentDto : AssignParentDto) {
+    return await this.parentsService.assignParent(assignParentDto.userId,assignParentDto.parentId)
   }
 }
