@@ -18,9 +18,9 @@ export class ParentsService {
     private readonly userService: UsersService,
     private dataSource: DataSource,
     private readonly accessControlService: AccessControlService,
-    private readonly studentService : StudentsService,
+    private readonly studentService: StudentsService,
     @InjectRepository(StudentParent)
-    private studentParentRepository : StudentParent
+    private studentParentRepository: Repository<StudentParent>
   ) { }
   private generatePassword() {
     return Math.random().toString(36).slice(-8);
@@ -80,18 +80,26 @@ export class ParentsService {
     }
     return await this.parentRepository.remove(existingParent);
   }
-
-  async assignParent(userId : string){
-    const existingUser = await this.userService.findOne(userId)
-    if(!existingUser) {
-      throw new NotFoundException("User Not Found")
-    }
+  
+  async assignParent(userId: string, parentId: string) {
+    const [existingParent, existingUser] = await Promise.all([
+      this.parentRepository.findOne({
+        where: {
+          id: parentId
+        }
+      }),
+      this.userService.findOne(userId)
+    ])
+    if (!existingUser) throw new NotFoundException("User Not Found")
+    if (!existingParent) throw new NotFoundException("Parent not Found")
     const checkStudent = await this.studentService.findOneByUserId(existingUser.id)
-    if (!checkStudent) {
-      throw new BadRequestException(`This User ID ${userId} is not student`)
-    }
+    if (!checkStudent) throw new BadRequestException(`This User ID ${userId} is not student`)
+    const assign = this.studentParentRepository.create({
+      userId: userId,
+      parentId: parentId
+    })
+    return await this.studentParentRepository.save(assign)
 
-    
   }
 
 }
